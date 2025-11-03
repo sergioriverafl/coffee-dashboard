@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Propuesta de Sostenibilidad | Juan Valdez Café</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- Sección de portada académica - Insertar después del header -->
+        <div class="propuesta-banner"
+            style="background: linear-gradient(135deg, #1a1a1a 0%, #2d1810 100%); text-align: center; margin-bottom: 30px;">
+            <h2 style="font-size: 2.5em; margin-bottom: 30px; letter-spacing: 2px;">
+                INNOVACIÓN E INTELIGENCIA DE NEGOCIOS
+            </h2>
+
+            <div style="margin: 30px 0;">
+                <p style="font-size: 1.1em; margin-bottom: 15px; opacity: 0.9;">Presentado por:</p>
+                <div style="line-height: 1.8; font-size: 1.05em;">
+                    <p>Carlos Santiago Maldonado Reyes</p>
+                    <p>Laura Isabel Piracon Varón</p>
+                    <p>Leidy Vargas Gonzalez</p>
+                    <p>Sergio Yamit Rivera Flor</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 35px; padding-top: 25px; border-top: 2px solid rgba(255,255,255,0.2);">
+                <p style="font-size: 1em; line-height: 1.6; opacity: 0.95;">
+                    Fundación Universitaria del Área Andina – Bogotá D.C.<br>
+                    Facultad de Administración de Empresas<br>
+                    Especialización en Alta Gerencia<br>
+                    <span style="margin-top: 10px; display: inline-block;">1 de noviembre de 2025</span>
+                </p>
+            </div>
+        </div>
+
+        <header>
+            <h1>🌱 Dashboard de Sostenibilidad</h1>
+            <p>Innovación Social: Trazabilidad y Transparencia del Café Colombiano</p>
+        </header>
+
+        <div class="propuesta-banner">
+            <h2>PROPUESTA 2: Innovación Social - Sostenibilidad y Comunidad Cafetera</h2>
+            <ul>
+                <li>Programa de trazabilidad completa del grano de café</li>
+                <li>Códigos QR o tecnología NFC en empaques</li>
+                <li>Cliente conoce: origen del café, caficultor, región y proyectos sociales</li>
+                <li>Fortalece transparencia y vínculo emocional con el producto</li>
+            </ul>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <!-- Se llenará dinámicamente -->
+        </div>
+
+        <div class="chart-container">
+            <h3>📈 Producción de Café en Colombia (1990-2018)</h3>
+            <canvas id="productionChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3>💰 Evolución de Precios Pagados a Caficultores</h3>
+            <canvas id="pricesChart"></canvas>
+        </div>
+
+        <div class="justification-section">
+            <h3>🎯 Por qué es necesaria la trazabilidad completa</h3>
+
+            <div class="justification-item">
+                <h4>1. Variabilidad de precios y sostenibilidad económica</h4>
+                <p>Los precios pagados a caficultores han variado entre <strong>$1.06/kg (1993)</strong> y
+                    <strong>$5.29/kg (2011)</strong>, generando incertidumbre económica. La trazabilidad permite
+                    justificar precios justos y estables.
+                </p>
+            </div>
+
+            <div class="justification-item">
+                <h4>2. Fluctuaciones en la producción</h4>
+                <p>Colombia ha experimentado cambios significativos en producción, desde <strong>18,000 toneladas
+                        (1997)</strong> hasta máximos de <strong>17,980 toneladas (1991)</strong>. La transparencia
+                    ayuda a los consumidores a entender estas variaciones climáticas y sociales.</p>
+            </div>
+
+            <div class="justification-item">
+                <h4>3. Crecimiento del consumo consciente</h4>
+                <p>El consumo doméstico ha crecido de <strong>1,235 toneladas (1990)</strong> a <strong>1,791 toneladas
+                        (2018)</strong>. Los consumidores modernos demandan información sobre el origen y el impacto
+                    social de sus compras.</p>
+            </div>
+
+            <div class="justification-item">
+                <h4>4. Diferenciación en el mercado global</h4>
+                <p>Con la competencia de otros países productores, la trazabilidad permite a Juan Valdez demostrar
+                    calidad superior y compromiso social, justificando un precio premium.</p>
+            </div>
+        </div>
+
+        <div class="justification-section">
+            <h3>📊 Impacto Esperado de la Implementación</h3>
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <h4>Confianza del Consumidor</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%">+85%</div>
+                    </div>
+                    <p>Incremento esperado en la confianza de marca</p>
+                </div>
+
+                <div class="impact-card">
+                    <h4>Lealtad de Clientes</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 70%">+70%</div>
+                    </div>
+                    <p>Aumento en la retención de clientes</p>
+                </div>
+
+                <div class="impact-card">
+                    <h4>Precio Premium Justificado</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 60%">+60%</div>
+                    </div>
+                    <p>Disposición a pagar más por transparencia</p>
+                </div>
+
+                <div class="impact-card">
+                    <h4>Impacto Social Directo</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 90%">+90%</div>
+                    </div>
+                    <p>Mejora en condiciones de caficultores</p>
+                </div>
+
+                <div class="impact-card">
+                    <h4>Diferenciación de Marca</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 95%">+95%</div>
+                    </div>
+                    <p>Posicionamiento como líder en sostenibilidad</p>
+                </div>
+
+                <div class="impact-card">
+                    <h4>Reducción de Intermediarios</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%">+75%</div>
+                    </div>
+                    <p>Mayor retorno directo para productores</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Dashboard generado para Juan Valdez Café - Propuesta de Innovación Social 2025</p>
+            <p>Datos: International Coffee Organization (ICO) 1990-2018</p>
+        </footer>
+    </div>
+
+    <script>
+        // Datos incrustados (también disponibles en datos_colombia.json)
+        const datosCompletos = {
+            produccion: {
+                "1990": 14396, "1991": 17980.397, "1992": 14946.878, "1993": 11422.422,
+                "1994": 12964, "1995": 12938.018, "1996": 10778.85, "1997": 12122.496,
+                "1998": 10867.962, "1999": 9512.2459, "2000": 10519.352, "2001": 11950.283,
+                "2002": 11712.04, "2003": 11052.624, "2004": 11428.856, "2005": 11952.2997,
+                "2006": 12164.1926, "2007": 12515.0974, "2008": 8664.2903, "2009": 8097.5861,
+                "2010": 8522.6594, "2011": 7653.3336, "2012": 9926.9445, "2013": 12124.0702,
+                "2014": 13333.3435, "2015": 14008.7814, "2016": 14634.3893, "2017": 13824.0725,
+                "2018": 13857.962
+            },
+            precios: {
+                "1990": 1.534, "1991": 1.481, "1992": 1.204, "1993": 1.106,
+                "1994": 1.898, "1995": 2.199, "1996": 2.065, "1997": 2.939,
+                "1998": 2.253, "1999": 1.906, "2000": 1.654, "2001": 1.279,
+                "2002": 1.160, "2003": 1.067, "2004": 1.342, "2005": 1.969,
+                "2006": 1.982, "2007": 2.208, "2008": 2.521, "2009": 3.067,
+                "2010": 3.985, "2011": 5.290, "2012": 3.679, "2013": 2.514,
+                "2014": 3.525, "2015": 2.635, "2016": 2.727, "2017": 2.776,
+                "2018": 2.505
+            },
+            consumo: {
+                "1990": 1235, "1991": 1269, "1992": 1303, "1993": 1339,
+                "1994": 1375, "1995": 1359, "1996": 1343, "1997": 1328,
+                "1998": 1312, "1999": 1297, "2000": 1282, "2001": 1267,
+                "2002": 1252, "2003": 1237, "2004": 1223, "2005": 1209,
+                "2006": 1194.633, "2007": 1280.923, "2008": 1290.5, "2009": 1274.479,
+                "2010": 1311.024, "2011": 1435.065, "2012": 1514.242, "2013": 1617.02,
+                "2014": 1665.451, "2015": 1720.373, "2016": 1736.4414, "2017": 1793.271,
+                "2018": 1791.41
+            }
+        };
+
+        // Calcular estadísticas
+        const produccionValues = Object.values(datosCompletos.produccion);
+        const preciosValues = Object.values(datosCompletos.precios);
+        const consumoValues = Object.values(datosCompletos.consumo);
+
+        const stats = {
+            produccionPromedio: (produccionValues.reduce((a, b) => a + b, 0) / produccionValues.length / 1000).toFixed(1),
+            produccionMax: (Math.max(...produccionValues) / 1000).toFixed(1),
+            produccionMin: (Math.min(...produccionValues) / 1000).toFixed(1),
+            precioPromedio: (preciosValues.reduce((a, b) => a + b, 0) / preciosValues.length).toFixed(2),
+            precioMax: Math.max(...preciosValues).toFixed(2),
+            precioMin: Math.min(...preciosValues).toFixed(2),
+            consumoActual: (consumoValues[consumoValues.length - 1] / 1000).toFixed(2),
+            crecimientoConsumo: (((consumoValues[consumoValues.length - 1] - consumoValues[0]) / consumoValues[0]) * 100).toFixed(1)
+        };
+
+        // Mostrar estadísticas
+        const statsGrid = document.getElementById('statsGrid');
+        statsGrid.innerHTML = `
+            <div class="stat-card">
+                <div class="stat-label">Producción Promedio</div>
+                <div class="stat-number">${stats.produccionPromedio}K</div>
+                <div class="stat-trend">toneladas/año</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Precio Promedio</div>
+                <div class="stat-number">$${stats.precioPromedio}</div>
+                <div class="stat-trend">USD/kg</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Variación de Precios</div>
+                <div class="stat-number">${((stats.precioMax / stats.precioMin) * 100 - 100).toFixed(0)}%</div>
+                <div class="stat-trend">Min: $${stats.precioMin} - Max: $${stats.precioMax}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Crecimiento Consumo</div>
+                <div class="stat-number">+${stats.crecimientoConsumo}%</div>
+                <div class="stat-trend">1990-2018</div>
+            </div>
+        `;
+
+        // Crear gráfica de producción
+        const ctxProduction = document.getElementById('productionChart').getContext('2d');
+
+        const years = Object.keys(datosCompletos.produccion);
+        const productionData = Object.values(datosCompletos.produccion).map(v => v / 1000);
+
+        // Función simple para dibujar gráfica de líneas
+        function drawLineChart(ctx, labels, data, title, yAxisLabel) {
+            const canvas = ctx.canvas;
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 60;
+
+            // Limpiar
+            ctx.clearRect(0, 0, width, height);
+
+            // Configuración
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+
+            const maxValue = Math.max(...data);
+            const minValue = Math.min(...data);
+            const range = maxValue - minValue;
+
+            // Dibujar ejes
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+
+            // Dibujar línea de datos
+            ctx.strokeStyle = '#8B4513';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+
+            data.forEach((value, index) => {
+                const x = padding + (index / (data.length - 1)) * chartWidth;
+                const y = height - padding - ((value - minValue) / range) * chartHeight;
+
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+
+            ctx.stroke();
+
+            // Dibujar puntos
+            ctx.fillStyle = '#2ecc71';
+            data.forEach((value, index) => {
+                const x = padding + (index / (data.length - 1)) * chartWidth;
+                const y = height - padding - ((value - minValue) / range) * chartHeight;
+
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Etiquetas del eje X (mostrar solo algunos años)
+            ctx.fillStyle = '#666';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+
+            const labelInterval = Math.floor(labels.length / 6);
+            labels.forEach((label, index) => {
+                if (index % labelInterval === 0 || index === labels.length - 1) {
+                    const x = padding + (index / (data.length - 1)) * chartWidth;
+                    ctx.fillText(label, x, height - padding + 20);
+                }
+            });
+
+            // Etiquetas del eje Y
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const value = minValue + (range / 5) * i;
+                const y = height - padding - (i / 5) * chartHeight;
+                ctx.fillText(value.toFixed(1), padding - 10, y + 5);
+            }
+
+            // Título del eje Y
+            ctx.save();
+            ctx.translate(20, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText(yAxisLabel, 0, 0);
+            ctx.restore();
+        }
+
+        // Dibujar gráficas
+        drawLineChart(ctxProduction, years, productionData, 'Producción', 'Miles de toneladas');
+
+        const ctxPrices = document.getElementById('pricesChart').getContext('2d');
+        const pricesData = Object.values(datosCompletos.precios);
+        drawLineChart(ctxPrices, years, pricesData, 'Precios', 'USD/kg');
+
+        // Ajustar canvas al tamaño de ventana
+        function resizeCharts() {
+            const charts = document.querySelectorAll('canvas');
+            charts.forEach(canvas => {
+                const parent = canvas.parentElement;
+                canvas.width = parent.offsetWidth - 60;
+                canvas.height = 400;
+            });
+
+            // Redibujar
+            drawLineChart(ctxProduction, years, productionData, 'Producción', 'Miles de toneladas');
+            drawLineChart(ctxPrices, years, pricesData, 'Precios', 'USD/kg');
+        }
+
+        window.addEventListener('resize', resizeCharts);
+        window.addEventListener('load', resizeCharts);
+    </script>
+</body>
+
+</html>
