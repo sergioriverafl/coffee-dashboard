@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Café Colombia - Análisis de Mercado</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        /* Sidebar estilo Power BI */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            padding: 20px;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-logo h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f5a623;
+        }
+
+        .sidebar-logo .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 24px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 15px;
+            margin: 5px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-menu li:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar-menu li.active {
+            background: #f5a623;
+            color: #1a1a1a;
+        }
+
+        .sidebar-menu li .menu-icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 250px;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Header estilo Power BI */
+        .header {
+            background: white;
+            padding: 20px 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .header-filters {
+            display: flex;
+            gap: 15px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            background: #f5f5f5;
+            border-color: #f5a623;
+        }
+
+        .filter-btn.active {
+            background: #f5a623;
+            color: white;
+            border-color: #f5a623;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 30px;
+        }
+
+        /* KPI Cards estilo Power BI */
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #f5a623;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .kpi-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .kpi-change {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .kpi-change.positive {
+            color: #10b981;
+        }
+
+        .kpi-change.negative {
+            color: #ef4444;
+        }
+
+        /* Charts Container */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f5a623;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 350px;
+        }
+
+        /* Table estilo Power BI */
+        .table-container {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+        }
+
+        thead th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        tbody td {
+            padding: 15px;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #f5a623;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+
+            .kpi-container {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header-filters {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Legend custom */
+        .custom-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <div class="icon">☕</div>
+            <h2>Coffee Analytics</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active">
+                <span class="menu-icon">📊</span>
+                <span>Dashboard</span>
+            </li>
+            <li>
+                <span class="menu-icon">📈</span>
+                <span>Producción</span>
+            </li>
+            <li>
+                <span class="menu-icon">💰</span>
+                <span>Precios</span>
+            </li>
+            <li>
+                <span class="menu-icon">🌍</span>
+                <span>Exportaciones</span>
+            </li>
+            <li>
+                <span class="menu-icon">📉</span>
+                <span>Consumo</span>
+            </li>
+            <li>
+                <span class="menu-icon">⚙️</span>
+                <span>Configuración</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <h1>📊 Dashboard de Análisis - Sector Cafetero Colombiano</h1>
+            </div>
+            <div class="header-filters">
+                <button class="filter-btn active" onclick="filterYear('all')">Todos los años</button>
+                <button class="filter-btn" onclick="filterYear('2010-2018')">2010-2018</button>
+                <button class="filter-btn" onclick="filterYear('recent')">Últimos 5 años</button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- KPI Cards -->
+            <div class="kpi-container">
+                <div class="kpi-card">
+                    <div class="kpi-label">Producción Promedio</div>
+                    <div class="kpi-value" id="kpi-production">-</div>
+                    <div class="kpi-change positive" id="kpi-production-change">
+                        <span>↑</span>
+                        <span>Cargando...</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Consumo Doméstico</div>
+                    <div class="kpi-value" id="kpi-consumption">-</div>
+                    <div class="kpi-change positive" id="kpi-consumption-change">
+                        <span>↑</span>
+                        <span>Cargando...</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Precio Promedio</div>
+                    <div class="kpi-value" id="kpi-price">-</div>
+                    <div class="kpi-change" id="kpi-price-change">
+                        <span>↑</span>
+                        <span>Cargando...</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Exportaciones Totales</div>
+                    <div class="kpi-value" id="kpi-exports">-</div>
+                    <div class="kpi-change positive" id="kpi-exports-change">
+                        <span>↑</span>
+                        <span>Cargando...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3 class="chart-title">📈 Producción Total de Café en Colombia (1990-2018)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="productionChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="chart-title">💰 Evolución de Precios Pagados a Caficultores</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="pricesChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="chart-title">📉 Consumo Doméstico vs Producción</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="consumptionChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="chart-title">🌍 Top 10 Países Productores (2018)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="top10Chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="table-container">
+                <h3 class="chart-title">📋 Datos Detallados - Colombia</h3>
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Año</th>
+                            <th>Producción (ton)</th>
+                            <th>Consumo Doméstico (ton)</th>
+                            <th>Precio (USD/kg)</th>
+                            <th>Exportaciones (ton)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center;">
+                                <div class="loading">
+                                    <div class="spinner"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let productionData = {};
+        let consumptionData = {};
+        let pricesData = {};
+        let exportsData = {};
+        let charts = {};
+
+        // Cargar datos CSV
+        async function loadCSVData() {
+            try {
+                // Nota: En producción, estos archivos deben estar en el mismo directorio o servidor
+                const files = {
+                    production: '/mnt/project/total-production.csv',
+                    consumption: '/mnt/project/domestic-consumption.csv',
+                    prices: '/mnt/project/prices-paid-to-growers.csv',
+                    exports: '/mnt/project/exports-calendar-year.csv'
+                };
+
+                // Cargar todos los CSV
+                const [prod, cons, price, exp] = await Promise.all([
+                    fetch(files.production).then(r => r.text()),
+                    fetch(files.consumption).then(r => r.text()),
+                    fetch(files.prices).then(r => r.text()),
+                    fetch(files.exports).then(r => r.text())
+                ]);
+
+                productionData = Papa.parse(prod, { header: true }).data;
+                consumptionData = Papa.parse(cons, { header: true }).data;
+                pricesData = Papa.parse(price, { header: true }).data;
+                exportsData = Papa.parse(exp, { header: true }).data;
+
+                // Inicializar dashboard
+                initializeDashboard();
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                // Usar datos de ejemplo si falla la carga
+                useSampleData();
+            }
+        }
+
+        // Datos de ejemplo si falla la carga de CSV
+        function useSampleData() {
+            const years = ['1990', '1995', '2000', '2005', '2010', '2015', '2018'];
+            const colombiaProduction = [14396, 12938, 10519, 11952, 8523, 14009, 13858];
+            const colombiaConsumption = [1235, 1359, 1282, 1209, 1311, 1720, 1791];
+            const colombiaPrices = [1.51, 1.71, 1.36, 2.03, 3.14, 2.43, 2.29];
+            const colombiaExports = [8965, 9432, 7821, 9134, 7823, 11250, 10850];
+
+            // Crear estructura similar a CSV
+            productionData = years.map((year, i) => ({
+                'total_production': 'Colombia',
+                [year]: colombiaProduction[i]
+            }));
+
+            consumptionData = years.map((year, i) => ({
+                'domestic_consumption': 'Colombia',
+                [year]: colombiaConsumption[i]
+            }));
+
+            pricesData = years.map((year, i) => ({
+                'prices_paid_to_growers': 'Colombia',
+                [year]: colombiaPrices[i]
+            }));
+
+            exportsData = years.map((year, i) => ({
+                'exports_calendar_year': 'Colombia',
+                [year]: colombiaExports[i]
+            }));
+
+            initializeDashboard();
+        }
+
+        // Inicializar dashboard
+        function initializeDashboard() {
+            updateKPIs();
+            createCharts();
+            populateTable();
+        }
+
+        // Actualizar KPIs
+        function updateKPIs() {
+            // Obtener datos de Colombia
+            const colombiaProd = productionData.find(row => 
+                row['total_production'] === 'Colombia' || 
+                row['total_production']?.includes('Colombia')
+            );
+            
+            const colombiaCons = consumptionData.find(row => 
+                row['domestic_consumption'] === 'Colombia' ||
+                row['domestic_consumption']?.includes('Colombia')
+            );
+
+            const colombiaPrice = pricesData.find(row => 
+                row['prices_paid_to_growers'] === 'Colombia' ||
+                row['prices_paid_to_growers']?.includes('Colombia')
+            );
+
+            const colombiaExport = exportsData.find(row => 
+                row['exports_calendar_year'] === 'Colombia' ||
+                row['exports_calendar_year']?.includes('Colombia')
+            );
+
+            // Calcular promedios y cambios
+            const years = Object.keys(colombiaProd || {}).filter(key => !isNaN(key));
+            
+            if (years.length > 0) {
+                // Producción
+                const prodValues = years.map(y => parseFloat(colombiaProd[y])).filter(v => !isNaN(v));
+                const avgProd = (prodValues.reduce((a, b) => a + b, 0) / prodValues.length).toFixed(0);
+                document.getElementById('kpi-production').textContent = `${parseFloat(avgProd).toLocaleString('es-CO')} ton`;
+                
+                const prodChange = ((prodValues[prodValues.length - 1] - prodValues[0]) / prodValues[0] * 100).toFixed(1);
+                document.getElementById('kpi-production-change').innerHTML = 
+                    `<span>${prodChange >= 0 ? '↑' : '↓'}</span><span>${Math.abs(prodChange)}% desde 1990</span>`;
+                document.getElementById('kpi-production-change').className = 
+                    `kpi-change ${prodChange >= 0 ? 'positive' : 'negative'}`;
+
+                // Consumo
+                if (colombiaCons) {
+                    const consValues = years.map(y => parseFloat(colombiaCons[y])).filter(v => !isNaN(v));
+                    const avgCons = (consValues.reduce((a, b) => a + b, 0) / consValues.length).toFixed(0);
+                    document.getElementById('kpi-consumption').textContent = `${parseFloat(avgCons).toLocaleString('es-CO')} ton`;
+                    
+                    const consChange = ((consValues[consValues.length - 1] - consValues[0]) / consValues[0] * 100).toFixed(1);
+                    document.getElementById('kpi-consumption-change').innerHTML = 
+                        `<span>${consChange >= 0 ? '↑' : '↓'}</span><span>${Math.abs(consChange)}% desde 1990</span>`;
+                    document.getElementById('kpi-consumption-change').className = 
+                        `kpi-change ${consChange >= 0 ? 'positive' : 'negative'}`;
+                }
+
+                // Precio
+                if (colombiaPrice) {
+                    const priceValues = years.map(y => parseFloat(colombiaPrice[y])).filter(v => !isNaN(v));
+                    const avgPrice = (priceValues.reduce((a, b) => a + b, 0) / priceValues.length).toFixed(2);
+                    document.getElementById('kpi-price').textContent = `$${avgPrice} USD/kg`;
+                    
+                    const priceChange = ((priceValues[priceValues.length - 1] - priceValues[0]) / priceValues[0] * 100).toFixed(1);
+                    document.getElementById('kpi-price-change').innerHTML = 
+                        `<span>${priceChange >= 0 ? '↑' : '↓'}</span><span>${Math.abs(priceChange)}% desde 1990</span>`;
+                    document.getElementById('kpi-price-change').className = 
+                        `kpi-change ${priceChange >= 0 ? 'positive' : 'negative'}`;
+                }
+
+                // Exportaciones
+                if (colombiaExport) {
+                    const exportValues = years.map(y => parseFloat(colombiaExport[y])).filter(v => !isNaN(v));
+                    const avgExport = (exportValues.reduce((a, b) => a + b, 0) / exportValues.length).toFixed(0);
+                    document.getElementById('kpi-exports').textContent = `${parseFloat(avgExport).toLocaleString('es-CO')} ton`;
+                    
+                    const exportChange = ((exportValues[exportValues.length - 1] - exportValues[0]) / exportValues[0] * 100).toFixed(1);
+                    document.getElementById('kpi-exports-change').innerHTML = 
+                        `<span>${exportChange >= 0 ? '↑' : '↓'}</span><span>${Math.abs(exportChange)}% desde 1990</span>`;
+                    document.getElementById('kpi-exports-change').className = 
+                        `kpi-change ${exportChange >= 0 ? 'positive' : 'negative'}`;
+                }
+            }
+        }
+
+        // Crear gráficos
+        function createCharts() {
+            const colombiaProd = productionData.find(row => 
+                row['total_production'] === 'Colombia' || 
+                row['total_production']?.includes('Colombia')
+            );
+            
+            const years = Object.keys(colombiaProd || {}).filter(key => !isNaN(key));
+            
+            if (years.length === 0) return;
+
+            // Gráfico 1: Producción
+            const prodValues = years.map(y => parseFloat(colombiaProd[y]));
+            charts.production = new Chart(document.getElementById('productionChart'), {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Producción (toneladas)',
+                        data: prodValues,
+                        borderColor: '#8B4513',
+                        backgroundColor: 'rgba(139, 69, 19, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 13 }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico 2: Precios
+            const colombiaPrice = pricesData.find(row => 
+                row['prices_paid_to_growers'] === 'Colombia' ||
+                row['prices_paid_to_growers']?.includes('Colombia')
+            );
+            
+            if (colombiaPrice) {
+                const priceValues = years.map(y => parseFloat(colombiaPrice[y]));
+                charts.prices = new Chart(document.getElementById('pricesChart'), {
+                    type: 'line',
+                    data: {
+                        labels: years,
+                        datasets: [{
+                            label: 'Precio (USD/kg)',
+                            data: priceValues,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Gráfico 3: Consumo vs Producción
+            const colombiaCons = consumptionData.find(row => 
+                row['domestic_consumption'] === 'Colombia' ||
+                row['domestic_consumption']?.includes('Colombia')
+            );
+            
+            if (colombiaCons) {
+                const consValues = years.map(y => parseFloat(colombiaCons[y]));
+                charts.consumption = new Chart(document.getElementById('consumptionChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: years,
+                        datasets: [
+                            {
+                                label: 'Producción',
+                                data: prodValues,
+                                backgroundColor: 'rgba(139, 69, 19, 0.7)',
+                                borderWidth: 0
+                            },
+                            {
+                                label: 'Consumo Doméstico',
+                                data: consValues,
+                                backgroundColor: 'rgba(245, 166, 35, 0.7)',
+                                borderWidth: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Gráfico 4: Top 10 países (2018)
+            const top10Data = productionData
+                .map(row => ({
+                    country: row['total_production'],
+                    value: parseFloat(row['2018'])
+                }))
+                .filter(item => !isNaN(item.value))
+                .sort((a, b) => b.value - a.value)
+                .slice(0, 10);
+
+            charts.top10 = new Chart(document.getElementById('top10Chart'), {
+                type: 'bar',
+                data: {
+                    labels: top10Data.map(d => d.country),
+                    datasets: [{
+                        label: 'Producción 2018 (toneladas)',
+                        data: top10Data.map(d => d.value),
+                        backgroundColor: [
+                            '#8B4513', '#D2691E', '#CD853F', '#DEB887',
+                            '#F4A460', '#D2B48C', '#BC8F8F', '#A0522D',
+                            '#8B7355', '#6B4423'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Poblar tabla
+        function populateTable() {
+            const colombiaProd = productionData.find(row => 
+                row['total_production'] === 'Colombia' || 
+                row['total_production']?.includes('Colombia')
+            );
+            
+            const colombiaCons = consumptionData.find(row => 
+                row['domestic_consumption'] === 'Colombia' ||
+                row['domestic_consumption']?.includes('Colombia')
+            );
+
+            const colombiaPrice = pricesData.find(row => 
+                row['prices_paid_to_growers'] === 'Colombia' ||
+                row['prices_paid_to_growers']?.includes('Colombia')
+            );
+
+            const colombiaExport = exportsData.find(row => 
+                row['exports_calendar_year'] === 'Colombia' ||
+                row['exports_calendar_year']?.includes('Colombia')
+            );
+
+            const years = Object.keys(colombiaProd || {}).filter(key => !isNaN(key));
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            years.forEach(year => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${year}</strong></td>
+                    <td>${parseFloat(colombiaProd[year]).toLocaleString('es-CO', {maximumFractionDigits: 0})}</td>
+                    <td>${colombiaCons ? parseFloat(colombiaCons[year]).toLocaleString('es-CO', {maximumFractionDigits: 0}) : 'N/A'}</td>
+                    <td>${colombiaPrice ? '$' + parseFloat(colombiaPrice[year]).toFixed(2) : 'N/A'}</td>
+                    <td>${colombiaExport ? parseFloat(colombiaExport[year]).toLocaleString('es-CO', {maximumFractionDigits: 0}) : 'N/A'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Filtrar por años
+        function filterYear(period) {
+            // Actualizar botones activos
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Aquí puedes implementar la lógica de filtrado
+            console.log('Filtrar por:', period);
+        }
+
+        // Iniciar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCSVData();
+        });
+    </script>
+</body>
+</html>
